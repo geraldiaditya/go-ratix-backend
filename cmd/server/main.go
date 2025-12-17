@@ -10,6 +10,10 @@ import (
 	movieHandler "github.com/geraldiaditya/ratix-backend/internal/modules/movie/handler"
 	movieRepository "github.com/geraldiaditya/ratix-backend/internal/modules/movie/repository"
 	movieService "github.com/geraldiaditya/ratix-backend/internal/modules/movie/service"
+	ticketDomain "github.com/geraldiaditya/ratix-backend/internal/modules/ticket/domain"
+	ticketHandler "github.com/geraldiaditya/ratix-backend/internal/modules/ticket/handler"
+	ticketRepository "github.com/geraldiaditya/ratix-backend/internal/modules/ticket/repository"
+	ticketService "github.com/geraldiaditya/ratix-backend/internal/modules/ticket/service"
 	userDomain "github.com/geraldiaditya/ratix-backend/internal/modules/user/domain"
 	"github.com/geraldiaditya/ratix-backend/internal/modules/user/handler"
 	"github.com/geraldiaditya/ratix-backend/internal/modules/user/repository"
@@ -37,6 +41,7 @@ func main() {
 			&movieDomain.Genre{},
 			&movieDomain.CastMember{},
 			&movieDomain.Showtime{},
+			&ticketDomain.Ticket{},
 		); err != nil {
 			log.Printf("Warning: Failed to auto migrate: %v", err)
 		}
@@ -52,6 +57,10 @@ func main() {
 	movieRepo := movieRepository.NewPostgresMovieRepository(db)
 	movieService := movieService.NewMovieService(movieRepo)
 	movieHandler := movieHandler.NewMovieHandler(movieService)
+
+	ticketRepo := ticketRepository.NewPostgresTicketRepository(db)
+	ticketService := ticketService.NewTicketService(ticketRepo)
+	ticketHandler := ticketHandler.NewTicketHandler(ticketService)
 
 	// Seeder (Simple check & insert)
 	var count int64
@@ -100,10 +109,49 @@ func main() {
 		log.Println("Seeding complete.")
 	}
 
+	// Seed Ticket
+	var ticketCount int64
+	db.Model(&ticketDomain.Ticket{}).Count(&ticketCount)
+	if ticketCount == 0 {
+		var m1 movieDomain.Movie
+		if err := db.First(&m1, 1).Error; err == nil {
+			log.Println("Seeding dummy ticket data...")
+			ticket1 := ticketDomain.Ticket{
+				UserID:      1,
+				MovieID:     m1.ID,
+				ShowtimeID:  1,
+				BookingCode: "BOOK-12345",
+				Seats:       "G14, G15",
+				CinemaName:  "Cinema XXI, Mall Grand Indonesia",
+				TheaterName: "Studio 1",
+				Price:       75000,
+				Status:      "active",
+				CreatedAt:   time.Now(),
+			}
+			db.Create(&ticket1)
+
+			ticket2 := ticketDomain.Ticket{
+				UserID:      1,
+				MovieID:     m1.ID,
+				ShowtimeID:  1,
+				BookingCode: "BOOK-67890",
+				Seats:       "A1",
+				CinemaName:  "CGV, Central Park",
+				TheaterName: "Velvet Class",
+				Price:       150000,
+				Status:      "history",
+				CreatedAt:   time.Now().AddDate(0, -1, 0),
+			}
+			db.Create(&ticket2)
+			log.Println("Ticket seeding complete.")
+		}
+	}
+
 	// 4. Setup Fiber App
 	app := fiber.New()
 	userHandler.RegisterRoutes(app)
 	movieHandler.RegisterRoutes(app)
+	ticketHandler.RegisterRoutes(app)
 
 	// 5. Start Server
 	log.Printf("Starting server on port %s", cfg.ServerPort)
