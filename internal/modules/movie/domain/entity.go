@@ -42,8 +42,8 @@ type Showtime struct {
 type MovieRepository interface {
 	GetAll() ([]Movie, error)
 	GetByID(id int64) (*Movie, error)
-	GetByStatus(status string) ([]Movie, error)
-	GetByGenre(genre string) ([]Movie, error)
+	GetByStatus(status string, limit, offset int) ([]Movie, int64, error)
+	GetByGenre(genre string, limit, offset int) ([]Movie, int64, error)
 	GetAllGenres() ([]Genre, error)
 	Create(movie *Movie) error
 }

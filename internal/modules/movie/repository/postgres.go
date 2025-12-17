@@ -35,26 +35,46 @@ func (r *PostgresMovieRepository) GetByID(id int64) (*domain.Movie, error) {
 	return &movie, nil
 }
 
-func (r *PostgresMovieRepository) GetByStatus(status string) ([]domain.Movie, error) {
+func (r *PostgresMovieRepository) GetByStatus(status string, limit, offset int) ([]domain.Movie, int64, error) {
 	var movies []domain.Movie
-	if err := r.DB.Where("status = ?", status).Preload("Genres").Find(&movies).Error; err != nil {
-		return nil, err
+	var total int64
+
+	// Count total
+	if err := r.DB.Model(&domain.Movie{}).Where("status = ?", status).Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
-	return movies, nil
+
+	if err := r.DB.Where("status = ?", status).Limit(limit).Offset(offset).Preload("Genres").Find(&movies).Error; err != nil {
+		return nil, 0, err
+	}
+	return movies, total, nil
 }
 
-func (r *PostgresMovieRepository) GetByGenre(genreName string) ([]domain.Movie, error) {
+func (r *PostgresMovieRepository) GetByGenre(genreName string, limit, offset int) ([]domain.Movie, int64, error) {
 	var movies []domain.Movie
-	// Join with movie_genres table and genres table to filter by genre name
-	err := r.DB.Joins("JOIN movie_genres ON movie_genres.movie_id = movies.id").
+	var total int64
+
+	// Count total (need proper join for count too)
+	err := r.DB.Model(&domain.Movie{}).
+		Joins("JOIN movie_genres ON movie_genres.movie_id = movies.id").
 		Joins("JOIN genres ON genres.id = movie_genres.genre_id").
 		Where("genres.name = ?", genreName).
+		Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Fetch data
+	err = r.DB.Joins("JOIN movie_genres ON movie_genres.movie_id = movies.id").
+		Joins("JOIN genres ON genres.id = movie_genres.genre_id").
+		Where("genres.name = ?", genreName).
+		Limit(limit).Offset(offset).
 		Preload("Genres").
 		Find(&movies).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return movies, nil
+	return movies, total, nil
 }
 
 func (r *PostgresMovieRepository) GetAllGenres() ([]domain.Genre, error) {

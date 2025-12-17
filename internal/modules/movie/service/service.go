@@ -27,7 +27,8 @@ func (s *MovieService) GetCategories() ([]dto.GenreResponse, error) {
 
 func (s *MovieService) GetBanner() (*dto.BannerResponse, error) {
 	// Logic: Get 'now_showing' AND standard picking logic (e.g. highest rated or first)
-	movies, err := s.Repo.GetByStatus("now_showing")
+	// For banner, we might just want 1, so limit=1, offset=0
+	movies, _, err := s.Repo.GetByStatus("now_showing", 1, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +51,17 @@ func (s *MovieService) GetBanner() (*dto.BannerResponse, error) {
 	}, nil
 }
 
-func (s *MovieService) GetMovies(category string) (*dto.MovieListResponse, error) {
+func (s *MovieService) GetMovies(category string, page, limit int) (*dto.MovieListResponse, error) {
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+
 	var movies []domain.Movie
+	var total int64
 	var err error
 
 	if category == "" || category == "now_showing" || category == "coming_soon" {
@@ -59,10 +69,10 @@ func (s *MovieService) GetMovies(category string) (*dto.MovieListResponse, error
 		if status == "" {
 			status = "now_showing" // Default
 		}
-		movies, err = s.Repo.GetByStatus(status)
+		movies, total, err = s.Repo.GetByStatus(status, limit, offset)
 	} else {
 		// Assume it's a genre
-		movies, err = s.Repo.GetByGenre(category)
+		movies, total, err = s.Repo.GetByGenre(category, limit, offset)
 	}
 
 	if err != nil {
@@ -74,7 +84,20 @@ func (s *MovieService) GetMovies(category string) (*dto.MovieListResponse, error
 		resp[i] = dto.ToMovieResponse(m)
 	}
 
-	return &dto.MovieListResponse{Movies: resp}, nil
+	totalPages := int(total) / limit
+	if int(total)%limit != 0 {
+		totalPages++
+	}
+
+	return &dto.MovieListResponse{
+		Movies: resp,
+		Meta: dto.PaginationMeta{
+			CurrentPage: page,
+			TotalPages:  totalPages,
+			TotalItems:  total,
+			Limit:       limit,
+		},
+	}, nil
 }
 
 func (s *MovieService) GetDetail(id int64) (*dto.MovieDetailResponse, error) {

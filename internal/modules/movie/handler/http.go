@@ -44,7 +44,10 @@ func (h *MovieHandler) handleGetBanner(c *fiber.Ctx) error {
 
 func (h *MovieHandler) handleGetMovies(c *fiber.Ctx) error {
 	category := c.Query("category")
-	resp, err := h.Service.GetMovies(category)
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	limit, _ := strconv.Atoi(c.Query("limit", "10"))
+
+	resp, err := h.Service.GetMovies(category, page, limit)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
