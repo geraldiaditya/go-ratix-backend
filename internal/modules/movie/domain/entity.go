@@ -4,20 +4,24 @@ import (
 	"time"
 
 	"github.com/geraldiaditya/ratix-backend/internal/modules/cinema/domain"
+	"gorm.io/gorm"
 )
 
 type Movie struct {
-	ID          int64        `gorm:"primaryKey" json:"id"`
-	Title       string       `gorm:"not null;type:varchar(255)" json:"title"`
-	Description string       `gorm:"type:text" json:"description"`
-	Duration    int          `gorm:"not null" json:"duration"` // in minutes
-	Rating      float64      `gorm:"type:decimal(3,1)" json:"rating"`
-	PosterURL   string       `gorm:"type:varchar(255)" json:"poster_url"`
-	ReleaseDate time.Time    `gorm:"type:date" json:"release_date"`
-	Status      string       `gorm:"type:varchar(50);default:'now_showing'" json:"status"` // now_showing, coming_soon
-	Genres      []Genre      `gorm:"many2many:movie_genres;" json:"genres"`
-	Cast        []CastMember `gorm:"foreignKey:MovieID" json:"cast"`
-	Showtimes   []Showtime   `gorm:"foreignKey:MovieID" json:"showtimes"`
+	ID          int64          `gorm:"primaryKey" json:"id"`
+	Title       string         `gorm:"not null;type:varchar(255)" json:"title"`
+	Description string         `gorm:"type:text" json:"description"`
+	Duration    int            `gorm:"not null" json:"duration"` // in minutes
+	Rating      float64        `gorm:"type:decimal(3,1)" json:"rating"`
+	PosterURL   string         `gorm:"type:varchar(255)" json:"poster_url"`
+	ReleaseDate time.Time      `gorm:"type:date" json:"release_date"`
+	Status      string         `gorm:"type:varchar(50);default:'now_showing'" json:"status"` // now_showing, coming_soon
+	Genres      []Genre        `gorm:"many2many:movie_genres;" json:"genres"`
+	Cast        []CastMember   `gorm:"foreignKey:MovieID" json:"cast"`
+	Showtimes   []Showtime     `gorm:"foreignKey:MovieID" json:"showtimes"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"deleted_at"`
 }
 
 type Genre struct {
