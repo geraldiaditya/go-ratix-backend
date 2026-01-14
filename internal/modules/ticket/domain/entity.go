@@ -5,6 +5,7 @@ import (
 
 	movieDomain "github.com/geraldiaditya/ratix-backend/internal/modules/movie/domain"
 	userDomain "github.com/geraldiaditya/ratix-backend/internal/modules/user/domain"
+	"gorm.io/gorm"
 )
 
 type Ticket struct {
@@ -22,6 +23,7 @@ type Ticket struct {
 	Status      string            `gorm:"type:varchar(20);default:'active'" json:"status"` // active, history, cancelled
 	CreatedAt   time.Time         `json:"created_at"`
 	UpdatedAt   time.Time         `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt    `gorm:"index" json:"deleted_at"`
 }
 
 type TicketRepository interface {
