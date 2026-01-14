@@ -27,7 +27,7 @@ func (s *CinemaService) GetLocations() (*dto.CityResponse, error) {
 }
 
 func (s *CinemaService) GetCinemas(city string) ([]dto.CinemaResponse, error) {
-	cinemas, err := s.Repo.GetCinemasByCity(city)
+	cinemas, err := s.Repo.GetCinemas(city)
 	if err != nil {
 		return nil, err
 	}

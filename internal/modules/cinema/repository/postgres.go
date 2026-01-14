@@ -21,9 +21,13 @@ func (r *PostgresCinemaRepository) GetAllCities() ([]string, error) {
 	return cities, nil
 }
 
-func (r *PostgresCinemaRepository) GetCinemasByCity(city string) ([]domain.Cinema, error) {
+func (r *PostgresCinemaRepository) GetCinemas(city string) ([]domain.Cinema, error) {
 	var cinemas []domain.Cinema
-	if err := r.DB.Where("city = ?", city).Find(&cinemas).Error; err != nil {
+	query := r.DB
+	if city != "" {
+		query = query.Where("city = ?", city)
+	}
+	if err := query.Find(&cinemas).Error; err != nil {
 		return nil, err
 	}
 	return cinemas, nil

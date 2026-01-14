@@ -36,9 +36,6 @@ func (h *CinemaHandler) handleGetLocations(c *fiber.Ctx) error {
 
 func (h *CinemaHandler) handleGetCinemas(c *fiber.Ctx) error {
 	city := c.Query("city")
-	if city == "" {
-		return c.Status(fiber.StatusBadRequest).SendString("City parameter is required")
-	}
 
 	resp, err := h.Service.GetCinemas(city)
 	if err != nil {

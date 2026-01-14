@@ -34,7 +34,7 @@ type Theater struct {
 
 type CinemaRepository interface {
 	GetAllCities() ([]string, error)
-	GetCinemasByCity(city string) ([]Cinema, error)
+	GetCinemas(city string) ([]Cinema, error)
 	GetByID(id int64) (*Cinema, error)
 	GetCinemaByShowtimeID(showtimeID int64) (*Cinema, error)
 	Create(cinema *Cinema) error
