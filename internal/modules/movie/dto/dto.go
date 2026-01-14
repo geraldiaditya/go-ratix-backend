@@ -18,7 +18,7 @@ type BannerResponse struct {
 }
 
 type MovieListResponse struct {
-	Movies []MovieResponse `json:"movies"`
+	Movies []MovieResponse `json:"data"`
 	Meta   PaginationMeta  `json:"meta"`
 }
 
