@@ -7,10 +7,14 @@ type CityResponse struct {
 }
 
 type CinemaResponse struct {
-	ID      int64  `json:"id"`
-	Name    string `json:"name"`
-	City    string `json:"city"`
-	Address string `json:"address"`
+	ID         int64   `json:"id"`
+	Name       string  `json:"name"`
+	City       string  `json:"city"`
+	Address    string  `json:"address"`
+	Rating     float64 `json:"rating"`
+	Lat        float64 `json:"lat"`
+	Lon        float64 `json:"lon"`
+	PictureURL string  `json:"picture_url"`
 }
 
 type SeatLayoutResponse struct {
@@ -40,9 +44,13 @@ type SeatLegend struct {
 
 func ToCinemaResponse(c domain.Cinema) CinemaResponse {
 	return CinemaResponse{
-		ID:      c.ID,
-		Name:    c.Name,
-		City:    c.City,
-		Address: c.Address,
+		ID:         c.ID,
+		Name:       c.Name,
+		City:       c.City,
+		Address:    c.Address,
+		Rating:     c.Rating,
+		Lat:        c.Lat,
+		Lon:        c.Lon,
+		PictureURL: c.PictureURL,
 	}
 }

@@ -7,14 +7,18 @@ import (
 )
 
 type Cinema struct {
-	ID        int64          `gorm:"primaryKey" json:"id"`
-	Name      string         `gorm:"not null;type:varchar(100)" json:"name"`
-	City      string         `gorm:"not null;type:varchar(50)" json:"city"`
-	Address   string         `gorm:"type:text" json:"address"`
-	BasePrice float64        `gorm:"not null;type:decimal(10,2);default:50000" json:"base_price"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+	ID         int64          `gorm:"primaryKey" json:"id"`
+	Name       string         `gorm:"not null;type:varchar(100)" json:"name"`
+	City       string         `gorm:"not null;type:varchar(50)" json:"city"`
+	Address    string         `gorm:"type:text" json:"address"`
+	BasePrice  float64        `gorm:"not null;type:decimal(10,2);default:50000" json:"base_price"`
+	Rating     float64        `gorm:"type:decimal(3,1);default:0" json:"rating"`
+	Lat        float64        `gorm:"type:decimal(10,8)" json:"lat"`
+	Lon        float64        `gorm:"type:decimal(11,8)" json:"lon"`
+	PictureURL string         `gorm:"type:text" json:"picture_url"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"deleted_at"`
 }
 
 type Theater struct {

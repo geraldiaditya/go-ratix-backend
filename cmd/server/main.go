@@ -58,8 +58,26 @@ func main() {
 		db.Model(&cinemaDomain.Cinema{}).Count(&cinemaCount)
 		if cinemaCount == 0 {
 			log.Println("Seeding dummy cinema data...")
-			jakartaCinema := cinemaDomain.Cinema{Name: "Cinema XXI, Grand Indonesia", City: "Jakarta", Address: "Jl. M.H. Thamrin No.1", BasePrice: 50000}
-			bandungCinema := cinemaDomain.Cinema{Name: "CGV, Paris Van Java", City: "Bandung", Address: "Jl. Sukajadi No.131-139", BasePrice: 35000}
+			jakartaCinema := cinemaDomain.Cinema{
+				Name:       "Cinema XXI, Grand Indonesia",
+				City:       "Jakarta",
+				Address:    "Jl. M.H. Thamrin No.1",
+				BasePrice:  50000,
+				Rating:     4.5,
+				Lat:        -6.1950,
+				Lon:        106.8209,
+				PictureURL: "https://example.com/jakarta.jpg",
+			}
+			bandungCinema := cinemaDomain.Cinema{
+				Name:       "CGV, Paris Van Java",
+				City:       "Bandung",
+				Address:    "Jl. Sukajadi No.131-139",
+				BasePrice:  35000,
+				Rating:     4.2,
+				Lat:        -6.8898,
+				Lon:        107.5966,
+				PictureURL: "https://example.com/bandung.jpg",
+			}
 			db.Create(&jakartaCinema) // ID likely 1
 			db.Create(&bandungCinema) // ID likely 2
 		}
