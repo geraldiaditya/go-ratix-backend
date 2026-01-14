@@ -25,30 +25,34 @@ func (s *MovieService) GetCategories() ([]dto.GenreResponse, error) {
 	return resp, nil
 }
 
-func (s *MovieService) GetBanner() (*dto.BannerResponse, error) {
+func (s *MovieService) GetBanner() ([]dto.BannerResponse, error) {
 	// Logic: Get 'now_showing' AND standard picking logic (e.g. highest rated or first)
 	// For banner, we might just want 1, so limit=1, offset=0
-	movies, _, err := s.Repo.GetByStatus("now_showing", 1, 0)
+	movies, _, err := s.Repo.GetByStatus("now_showing", 5, 0)
 	if err != nil {
 		return nil, err
 	}
 	if len(movies) == 0 {
 		return nil, nil // Or default banner
 	}
-	m := movies[0]
+	var resp []dto.BannerResponse
 
-	genres := make([]string, len(m.Genres))
-	for i, g := range m.Genres {
-		genres[i] = g.Name
+	for _, m := range movies {
+		genres := make([]string, len(m.Genres))
+		for i, g := range m.Genres {
+			genres[i] = g.Name
+		}
+
+		resp = append(resp, dto.BannerResponse{
+			MovieID:   m.ID,
+			Title:     m.Title,
+			PosterURL: m.PosterURL,
+			Rating:    m.Rating,
+			Genres:    genres,
+		})
 	}
 
-	return &dto.BannerResponse{
-		MovieID:   m.ID,
-		Title:     m.Title,
-		PosterURL: m.PosterURL,
-		Rating:    m.Rating,
-		Genres:    genres,
-	}, nil
+	return resp, nil
 }
 
 func (s *MovieService) GetMovies(category string, page, limit int) (*dto.MovieListResponse, error) {
