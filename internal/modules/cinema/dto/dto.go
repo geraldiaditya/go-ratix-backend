@@ -6,9 +6,14 @@ type CityResponse struct {
 	Cities []string `json:"cities"`
 }
 
+type BrandResponse struct {
+	Brands []string `json:"brands"`
+}
+
 type CinemaResponse struct {
 	ID         int64   `json:"id"`
 	Name       string  `json:"name"`
+	Brand      string  `json:"brand"`
 	City       string  `json:"city"`
 	Address    string  `json:"address"`
 	Rating     float64 `json:"rating"`
@@ -46,6 +51,7 @@ func ToCinemaResponse(c domain.Cinema) CinemaResponse {
 	return CinemaResponse{
 		ID:         c.ID,
 		Name:       c.Name,
+		Brand:      c.Brand,
 		City:       c.City,
 		Address:    c.Address,
 		Rating:     c.Rating,

@@ -9,6 +9,7 @@ import (
 type Cinema struct {
 	ID         int64          `gorm:"primaryKey" json:"id"`
 	Name       string         `gorm:"not null;type:varchar(100)" json:"name"`
+	Brand      string         `gorm:"type:varchar(50)" json:"brand"` // e.g. "Cinema XXI", "CGV", "Cinepolis"
 	City       string         `gorm:"not null;type:varchar(50)" json:"city"`
 	Address    string         `gorm:"type:text" json:"address"`
 	BasePrice  float64        `gorm:"not null;type:decimal(10,2);default:50000" json:"base_price"`
@@ -34,7 +35,8 @@ type Theater struct {
 
 type CinemaRepository interface {
 	GetAllCities() ([]string, error)
-	GetCinemas(city string) ([]Cinema, error)
+	GetAllBrands() ([]string, error)
+	GetCinemas(city string, brand string) ([]Cinema, error)
 	GetByID(id int64) (*Cinema, error)
 	GetCinemaByShowtimeID(showtimeID int64) (*Cinema, error)
 	Create(cinema *Cinema) error

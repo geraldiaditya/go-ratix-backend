@@ -21,11 +21,25 @@ func (r *PostgresCinemaRepository) GetAllCities() ([]string, error) {
 	return cities, nil
 }
 
-func (r *PostgresCinemaRepository) GetCinemas(city string) ([]domain.Cinema, error) {
+func (r *PostgresCinemaRepository) GetAllBrands() ([]string, error) {
+	var brands []string
+	if err := r.DB.Model(&domain.Cinema{}).
+		Distinct("brand").
+		Where("brand IS NOT NULL AND brand != ''").
+		Pluck("brand", &brands).Error; err != nil {
+		return nil, err
+	}
+	return brands, nil
+}
+
+func (r *PostgresCinemaRepository) GetCinemas(city string, brand string) ([]domain.Cinema, error) {
 	var cinemas []domain.Cinema
 	query := r.DB
 	if city != "" {
 		query = query.Where("city = ?", city)
+	}
+	if brand != "" {
+		query = query.Where("brand = ?", brand)
 	}
 	if err := query.Find(&cinemas).Error; err != nil {
 		return nil, err

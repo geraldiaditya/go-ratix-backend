@@ -26,8 +26,16 @@ func (s *CinemaService) GetLocations() (*dto.CityResponse, error) {
 	return &dto.CityResponse{Cities: cities}, nil
 }
 
-func (s *CinemaService) GetCinemas(city string) ([]dto.CinemaResponse, error) {
-	cinemas, err := s.Repo.GetCinemas(city)
+func (s *CinemaService) GetBrands() (*dto.BrandResponse, error) {
+	brands, err := s.Repo.GetAllBrands()
+	if err != nil {
+		return nil, err
+	}
+	return &dto.BrandResponse{Brands: brands}, nil
+}
+
+func (s *CinemaService) GetCinemas(city string, brand string) ([]dto.CinemaResponse, error) {
+	cinemas, err := s.Repo.GetCinemas(city, brand)
 	if err != nil {
 		return nil, err
 	}

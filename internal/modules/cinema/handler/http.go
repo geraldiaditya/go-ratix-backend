@@ -20,6 +20,7 @@ func (h *CinemaHandler) RegisterRoutes(app *fiber.App) {
 	locations := app.Group("/locations")
 
 	locations.Get("/", h.handleGetLocations)
+	cinemas.Get("/brands", h.handleGetBrands)
 	cinemas.Get("/", h.handleGetCinemas)
 
 	// Seat Selection
@@ -34,10 +35,19 @@ func (h *CinemaHandler) handleGetLocations(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
+func (h *CinemaHandler) handleGetBrands(c *fiber.Ctx) error {
+	resp, err := h.Service.GetBrands()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+	return c.JSON(resp)
+}
+
 func (h *CinemaHandler) handleGetCinemas(c *fiber.Ctx) error {
 	city := c.Query("city")
+	brand := c.Query("brand")
 
-	resp, err := h.Service.GetCinemas(city)
+	resp, err := h.Service.GetCinemas(city, brand)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
