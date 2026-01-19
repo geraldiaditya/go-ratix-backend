@@ -35,6 +35,7 @@ type Theater struct {
 }
 
 type CinemaFilter struct {
+	Name   string
 	City   string
 	Brand  string
 	Lat    float64

@@ -33,9 +33,12 @@ func (r *PostgresCinemaRepository) GetAllBrands() ([]string, error) {
 }
 
 func (r *PostgresCinemaRepository) GetCinemas(filter domain.CinemaFilter) ([]domain.Cinema, error) {
-	var cinemas []domain.Cinema
+	cinemas := []domain.Cinema{}
 	query := r.DB.Model(&domain.Cinema{})
 
+	if filter.Name != "" {
+		query = query.Where("name ILIKE ?", "%"+filter.Name+"%")
+	}
 	if filter.City != "" {
 		query = query.Where("city = ?", filter.City)
 	}
