@@ -45,6 +45,7 @@ func (h *CinemaHandler) handleGetBrands(c *fiber.Ctx) error {
 }
 
 func (h *CinemaHandler) handleGetCinemas(c *fiber.Ctx) error {
+	name := c.Query("name")
 	city := c.Query("city")
 	brand := c.Query("brand")
 	lat := c.QueryFloat("lat", 0)
@@ -52,6 +53,7 @@ func (h *CinemaHandler) handleGetCinemas(c *fiber.Ctx) error {
 	radius := c.QueryFloat("radius", 0)
 
 	filter := domain.CinemaFilter{
+		Name:   name,
 		City:   city,
 		Brand:  brand,
 		Lat:    lat,
