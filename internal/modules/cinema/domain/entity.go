@@ -17,6 +17,7 @@ type Cinema struct {
 	Lat        float64        `gorm:"type:decimal(10,8)" json:"lat"`
 	Lon        float64        `gorm:"type:decimal(11,8)" json:"lon"`
 	PictureURL string         `gorm:"type:text" json:"picture_url"`
+	Distance   float64        `gorm:"-" json:"distance"` // Calculated at runtime, not stored
 	CreatedAt  time.Time      `json:"created_at"`
 	UpdatedAt  time.Time      `json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"deleted_at"`
@@ -33,10 +34,18 @@ type Theater struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
 }
 
+type CinemaFilter struct {
+	City   string
+	Brand  string
+	Lat    float64
+	Lon    float64
+	Radius float64
+}
+
 type CinemaRepository interface {
 	GetAllCities() ([]string, error)
 	GetAllBrands() ([]string, error)
-	GetCinemas(city string, brand string) ([]Cinema, error)
+	GetCinemas(filter CinemaFilter) ([]Cinema, error)
 	GetByID(id int64) (*Cinema, error)
 	GetCinemaByShowtimeID(showtimeID int64) (*Cinema, error)
 	Create(cinema *Cinema) error

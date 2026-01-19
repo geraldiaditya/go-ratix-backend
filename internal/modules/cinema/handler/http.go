@@ -3,6 +3,7 @@ package handler
 import (
 	"strconv"
 
+	"github.com/geraldiaditya/ratix-backend/internal/modules/cinema/domain"
 	"github.com/geraldiaditya/ratix-backend/internal/modules/cinema/service"
 	"github.com/gofiber/fiber/v2"
 )
@@ -46,8 +47,19 @@ func (h *CinemaHandler) handleGetBrands(c *fiber.Ctx) error {
 func (h *CinemaHandler) handleGetCinemas(c *fiber.Ctx) error {
 	city := c.Query("city")
 	brand := c.Query("brand")
+	lat := c.QueryFloat("lat", 0)
+	lon := c.QueryFloat("lon", 0)
+	radius := c.QueryFloat("radius", 0)
 
-	resp, err := h.Service.GetCinemas(city, brand)
+	filter := domain.CinemaFilter{
+		City:   city,
+		Brand:  brand,
+		Lat:    lat,
+		Lon:    lon,
+		Radius: radius,
+	}
+
+	resp, err := h.Service.GetCinemas(filter)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

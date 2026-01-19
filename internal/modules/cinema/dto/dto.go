@@ -20,6 +20,7 @@ type CinemaResponse struct {
 	Lat        float64 `json:"lat"`
 	Lon        float64 `json:"lon"`
 	PictureURL string  `json:"picture_url"`
+	Distance   float64 `json:"distance_km,omitempty"`
 }
 
 type SeatLayoutResponse struct {
@@ -58,5 +59,6 @@ func ToCinemaResponse(c domain.Cinema) CinemaResponse {
 		Lat:        c.Lat,
 		Lon:        c.Lon,
 		PictureURL: c.PictureURL,
+		Distance:   c.Distance,
 	}
 }

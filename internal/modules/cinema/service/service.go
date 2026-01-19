@@ -34,8 +34,8 @@ func (s *CinemaService) GetBrands() (*dto.BrandResponse, error) {
 	return &dto.BrandResponse{Brands: brands}, nil
 }
 
-func (s *CinemaService) GetCinemas(city string, brand string) ([]dto.CinemaResponse, error) {
-	cinemas, err := s.Repo.GetCinemas(city, brand)
+func (s *CinemaService) GetCinemas(filter domain.CinemaFilter) ([]dto.CinemaResponse, error) {
+	cinemas, err := s.Repo.GetCinemas(filter)
 	if err != nil {
 		return nil, err
 	}
