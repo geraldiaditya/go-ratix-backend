@@ -21,14 +21,63 @@ func (r *PostgresCinemaRepository) GetAllCities() ([]string, error) {
 	return cities, nil
 }
 
-func (r *PostgresCinemaRepository) GetCinemas(city string) ([]domain.Cinema, error) {
-	var cinemas []domain.Cinema
-	query := r.DB
-	if city != "" {
-		query = query.Where("city = ?", city)
-	}
-	if err := query.Find(&cinemas).Error; err != nil {
+func (r *PostgresCinemaRepository) GetAllBrands() ([]string, error) {
+	var brands []string
+	if err := r.DB.Model(&domain.Cinema{}).
+		Distinct("brand").
+		Where("brand IS NOT NULL AND brand != ''").
+		Pluck("brand", &brands).Error; err != nil {
 		return nil, err
+	}
+	return brands, nil
+}
+
+func (r *PostgresCinemaRepository) GetCinemas(filter domain.CinemaFilter) ([]domain.Cinema, error) {
+	var cinemas []domain.Cinema
+	query := r.DB.Model(&domain.Cinema{})
+
+	if filter.City != "" {
+		query = query.Where("city = ?", filter.City)
+	}
+	if filter.Brand != "" {
+		query = query.Where("brand = ?", filter.Brand)
+	}
+
+	if filter.Lat != 0 && filter.Lon != 0 {
+		// Haversine formula
+		haversine := `(
+			6371 * acos(
+				cos(radians(?)) * cos(radians(lat)) * cos(radians(lon) - radians(?)) +
+				sin(radians(?)) * sin(radians(lat))
+			)
+		)`
+		query = query.Select("*, "+haversine+" AS hav_dist", filter.Lat, filter.Lon, filter.Lat)
+		query = query.Order("hav_dist ASC")
+
+		if filter.Radius > 0 {
+			query = query.Where(haversine+" < ?", filter.Lat, filter.Lon, filter.Lat, filter.Radius)
+		}
+
+		// Use a temporary struct to scan the result including the distance
+		var results []struct {
+			domain.Cinema
+			Distance float64 `gorm:"column:hav_dist"`
+		}
+
+		if err := query.Scan(&results).Error; err != nil {
+			return nil, err
+		}
+
+		// Map back to domain.Cinema
+		for _, r := range results {
+			c := r.Cinema
+			c.Distance = r.Distance
+			cinemas = append(cinemas, c)
+		}
+	} else {
+		if err := query.Find(&cinemas).Error; err != nil {
+			return nil, err
+		}
 	}
 	return cinemas, nil
 }

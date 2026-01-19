@@ -93,7 +93,7 @@ internal/
 
 ## 📚 API Documentation
 
-A Postman/Insomnia collection is available in the `api-collection` directory to test the endpoints.
+A Bruno collection is available in the `api-collection` directory to test the endpoints.
 
 ## 📄 License
 

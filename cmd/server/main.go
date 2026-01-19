@@ -60,6 +60,7 @@ func main() {
 			log.Println("Seeding dummy cinema data...")
 			jakartaCinema := cinemaDomain.Cinema{
 				Name:       "Cinema XXI, Grand Indonesia",
+				Brand:      "Cinema XXI",
 				City:       "Jakarta",
 				Address:    "Jl. M.H. Thamrin No.1",
 				BasePrice:  50000,
@@ -70,6 +71,7 @@ func main() {
 			}
 			bandungCinema := cinemaDomain.Cinema{
 				Name:       "CGV, Paris Van Java",
+				Brand:      "CGV",
 				City:       "Bandung",
 				Address:    "Jl. Sukajadi No.131-139",
 				BasePrice:  35000,
